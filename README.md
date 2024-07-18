@@ -1,6 +1,6 @@
 # MBC_MSM
 
-**Methodological details - **
+**Methodological details -**
 
 *Objective:* Building Markov state models with weighted ensemble (WE) simulation data.
 
@@ -14,7 +14,7 @@ $\bf C$ = $\bf C_{obs}$ + $\sum$ $\bf T_i$ $\bf M_i$
 
 where, the summation runs over i=1 to i=$\tau$-1, the ${\bf C}_{\text{obs}}$ is the observed set of counts without merging and ${\bf T}_i$ is the $i$-step transition matrix, resulting from the normalizing the full set of counts.
 
-**Technical details - **
+**Technical details -**
 
 *Contents:* Codes that can be used to build merging corrected time-lagged counts matrices, $\bf C$, following the method proposed in the MBC-MSM paper (link to pre-print XXX).
 
