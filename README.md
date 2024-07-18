@@ -1,15 +1,15 @@
 # MBC_MSM
 
-Objective: Building merging bias corrected Markov state models (MBC-MSMs) with weighted ensemble (WE) simulation data.
+**Objective:** Building merging bias corrected Markov state models (MBC-MSMs) with weighted ensemble (WE) simulation data.
 
 **Problem:** When constructing a transition matrix $\bf T$ for a weighted ensemble simulation, using lag times longer than a single cycle can cause the dataset to become biased.  Trajectories that are ended prematurely (by merging) are generally closer to stable states.  If $\bf T$ simply disregards these trajectories, it is systematically undercounting transitions towards more stable states.
 
 **The solution:** Keep an accounting of all "incomplete" trajectory segments as follows.  When constructing a time-lagged count matrix $\bf C$ with a lag-time $\tau_n$, define a set of matrices, ${\bf M}_i$, whose elements $M_i(k,j)$ count the number of trajectories that have made it to $k$, starting from state $j$, but there are still $i$ timesteps left in the transition interval.
 
 The complete time-lagged count matrix is then:
-\begin{equation}
-{\bf C} = {\bf C}_{\text{obs}} + \sum_{i=1}^{\tau_n-1} {\bf T}_i {\bf M}_i
-\end{equation}
+
+$\bf C$ = $\bf C_{\text{obs}$ + \sum_{i=1}^{\tau_n-1} {\bf T}_i {\bf M}_i
+
 where ${\bf C}_{\text{obs}}$ is the observed (incomplete) set of counts and ${\bf T}_i$ is the $i$-step transition matrix, resulting from the normalizing the full set of counts.
 Contents: Cdes that can be used to build time-lagged counts matrices following the method proposed in the MBC-MSM paper (link to pre-print XXX).
 
