@@ -8,7 +8,7 @@
 
 The complete time-lagged count matrix is then:
 
-$\bf C$ = $\bf C_{obs}$ + $\sum_{i=1}^{\tau-1}$ {\bf T}_i {\bf M}_i
+$\bf C$ = $\bf C_{obs}$ + $\sum_{i=1}$^${\tau-1}$ {\bf T}_i {\bf M}_i
 
 where ${\bf C}_{\text{obs}}$ is the observed (incomplete) set of counts and ${\bf T}_i$ is the $i$-step transition matrix, resulting from the normalizing the full set of counts.
 Contents: Cdes that can be used to build time-lagged counts matrices following the method proposed in the MBC-MSM paper (link to pre-print XXX).
