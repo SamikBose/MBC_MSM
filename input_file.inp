@@ -2,11 +2,11 @@
 # Careful about the weights paths
 n_clust = 1200  # number of clusters
 lag_time = 100  # lag time 
-clusterlabels_pkl_path = '/dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/reshaped_cluster_labels_50_nclust1200.pkl'  #
-h5_path = '/dickson/s1/bosesami/sEH_combined/50/REVO/clone_all.h5' #
-merge_fixed_wts_path = '/dickson/s1/kilincce/projects/p3_lagtime/sEH/data/50/fixed_wt_cycle_based_dictionary' #without run and .pkl extension
-we_wts_path = '/dickson/s1/kilincce/projects/p3_lagtime/sEH/data/50/wt_cycle_based_dictionary' #without run and .pkl extension
-M_path = '/dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/M_stored_w2_counts_lig50_lag100.pkl'  #
-C_mbc_path = '/dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/C_stored_w2_counts_lag100_nclust1200.pkl'  #
-out_path = '/dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/output/'   #
-C_MBC_filename = 'C_MBC_w2_counts_lag100_nclust1200.pkl' #
+clusterlabels_pkl_path = /dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/debug/reshaped_cluster_labels_50_nclust1200.pkl  #
+h5_path = /dickson/s1/bosesami/sEH_combined/50/REVO/clone_all.h5 #
+merge_fixed_wts_path = /dickson/s1/kilincce/projects/p3_lagtime/sEH/data/50/fixed_wt_cycle_based_dictionary #without run and .pkl extension
+we_wts_path = /dickson/s1/kilincce/projects/p3_lagtime/sEH/data/50/wt_cycle_based_dictionary #without run and .pkl extension
+M_path = /dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/debug/M_stored_w2_counts_lig50_lag100.pkl  #
+out_path = /dickson/s1/bosesami/time_lagged_data_WE/sEH_test/lig50/data/model_1200/cluster_iter/debug/output/   #
+MBC_file = C_MBC_w2_counts_lag100_nclust1200.pkl #
+Obs_file = C_obs_w2_counts_lag100_nclust1200.pkl #

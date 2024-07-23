@@ -1,3 +1,16 @@
+##
+# Description: A standalone code which can calculate the Merging Bias Corrected Counts Matrix from WE simulation data (in h5 format)
+#
+# Prerequisites: (i) Cluster labels of each snapshot of the WE data, 
+#               (ii) The WE simulation data (currently only h5 supported)
+#               (iii) WEPY software; latest,stable version.
+#               (iv) Input file as the command line argument. (check the example inp file in the repo)
+#
+# Follow up: Use our package CSNAnalysis to build CSNs and calculate committors and mfpts. (https://github.com/SamikBose/Long_time_lagged_trans_mat/blob/9ba7de15ee465df402f7e45c0aaf765c9c6f38ee/build_correctedMSM_with_iterations_over_clust_adjusted.py#L474) 
+#
+# Comment: This code implements 'w2'-scheme only, which is more intuitive to capture the non-markovianity in the real systems. 
+
+
 import numpy as np
 import pickle as pkl
 import sys
@@ -71,7 +84,7 @@ def read_inputs(input_path):
     Parameters:
     ----------
     input_path: str
-        Path to the input file.
+    input_dict['C_obs_filename']    Path to the input file.
 
     Returns:
     --------
@@ -106,7 +119,8 @@ def read_inputs(input_path):
                     if input_param == 'we_wts_path':                input_dict['we_wts'] = str(input_value)
                     if input_param == 'M_path':                     input_dict['M_path'] = str(input_value)
                     if input_param == 'out_path':                   input_dict['out_path'] = str(input_value)
-                    if input_param == 'C_MBC_filename':             input_dict['C_filename'] = str(input_value)
+                    if input_param == 'MBC_file':                   input_dict['MBC_C_filename'] = str(input_value)
+                    if input_param == 'Obs_file':                   input_dict['C_obs_filename'] = str(input_value)
     return input_dict
 
 # Creating the out folder
@@ -232,7 +246,7 @@ def load_fixed_weights(wt_fixed_path, WE_weights, cl_dict, n_walkers, n_cycles):
 
     return wt_dict_merge_fixed
 
-# 
+# Create cloning information dictionary at each cycle 
 def cloning_dict(resamp_pan):
     """
     Function to create a dictionary to store cloning information for each cycle.
@@ -264,6 +278,7 @@ def cloning_dict(resamp_pan):
     return(cloning_dict)
 
 
+# Calculate additive correction term to correct the merging bias
 def get_deltas(Tmat,M,tau):
     """
     Compute the deltas (sum) matrix using the formula:
@@ -296,7 +311,7 @@ def get_deltas(Tmat,M,tau):
 
 # Building the counts matrices
 def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
-                    lag_time, n_clusters, cluster_labels, M_path=None):
+                    lag_time, n_clusters, cluster_labels, M_path, Calc_M):
 
 
 
@@ -327,6 +342,8 @@ def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
     M_path (Optional): str
         Path to the M file, if already exists.
 
+    Calc_M: Boolean
+        To calculate the M dictionaries or not to.
 
     Returns
     -------
@@ -342,21 +359,19 @@ def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
 
     wepy_h5 = read_hdf5(h5_path)
     window_length = lag_time + 1
-    
+    nothing_keep_merging = [1,4] 
     with wepy_h5:
         # determine the 1step counts  (T_i matrix that we have in the equation)
         c_obs_1step = np.zeros((n_clusters,n_clusters))
         c_obs = np.zeros((n_clusters,n_clusters))
         c_obs_we = np.zeros((n_clusters,n_clusters))
 
-        M = {t: np.zeros((n_clusters, n_clusters)) for t in range(1, window_length)}
         n_runs = wepy_h5.num_runs
         
-        if M_path is None:
-            calc_M = True
+        if Calc_M == True:
+            M = {t: np.zeros((n_clusters, n_clusters)) for t in range(1, window_length)}
         else:
-            calc_M = False
-            M = pkl.load(M_path, 'rb')
+            M = pkl.load(open(M_path, 'rb'))
 
         for run in range(n_runs):
             #print('...for run:', run)
@@ -427,7 +442,7 @@ def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
 
             # print(f'...in time: {time.time() - start_build_C}')
 
-            if calc_M == True:
+            if Calc_M == True:
                 start_build_M = time.time()
                 # print('.. the M matrices...') 
                 for init_cycle in range(n_cycles-lag_time): #check for all cycles that fall within the (final_cycle - lagtime) range
@@ -459,10 +474,8 @@ def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
 
                                     M[index][x2, x1] += wt2
 
-                
-                # print(f'...in time: {time.time() - start_build_M}')
-    if calc_M == True:
-        save_file(M, M_path)
+        if Calc_M == True:
+            save_file(M, M_path)
 
     #Calculate T_1step 
     T_1step = c_obs_1step/c_obs_1step.sum(axis=0)
@@ -472,6 +485,7 @@ def build_matrices(h5_path, wt_fixed_path_name, we_wts_path_name,
     return C, c_obs, c_obs_we
 
 
+# Main function
 if __name__=='__main__':
 
     parser = argparse.ArgumentParser()
@@ -488,20 +502,26 @@ if __name__=='__main__':
     wt_fixed_path_name = input_dict['fixed_wts_path']
     we_wts_path_name = input_dict['we_wts']
     out_folder = input_dict['out_path']
-    C_filename = input_dict['C_path']
+    C_obs_filename = input_dict['C_obs_filename']
+    MBC_C_filename = input_dict['MBC_C_filename']
 
     # Optional arguments
     M_path =  input_dict['M_path']
-    
     ensure_directory_exists(out_folder)
     
     assert osp.exists(clusterlabels_path), f"{clusterlabels_path}, cluster labels file does not exist"
     assert osp.exists(h5_path), f"{h5_path}, h5 file does not exist"
+    
+    Calc_M = True
+    if osp.exists(M_path):
+        Calc_M=False
 
-    C_MBC_filepath = osp.join(out_folder, C_filename)
+    MBC_C_path = osp.join(out_folder, MBC_C_filename)
+    C_obs_path = osp.join(out_folder, C_obs_filename)
+
     cluster_labels = pkl.load(open(clusterlabels_path,'rb'))
 
-    print("Building the without merging correction observed counts matrix...")
+    print("Building the merging corrected counts matrix...")
     start_build = time.time()
     C, c_obs, c_obs_we = build_matrices(h5_path, 
                                         wt_fixed_path_name,
@@ -509,11 +529,17 @@ if __name__=='__main__':
                                         lag_time, 
                                         n_clusters, 
                                         cluster_labels,
-                                        M_path=None)
+                                        M_path,
+                                        Calc_M)
 
-    print('Done calculating matrices with: n_clusters:{n_clusters} and lagtime {lag_time}...')
+    print(f'Done calculating matrices with: n_clusters:{n_clusters} and lagtime {lag_time}...')
     print(f'Time taken: {start_build - time.time()} seconds') 
     
     save_file(c_obs, C_obs_path)
-    save_file(C, C_MBC_filepath)
+    save_file(C, MBC_C_path)
 
+
+## To Do list (Alex and Samik):
+## 1. Avoid saving data in pkls: (i) Use the np.save binary or (ii) use compute observables in the wepy to attach the cluster labels to each h5
+## 2. Create the h5 and cloning panel and pass them in the build matrices function instead of passing a bunch of paths.
+## 3. wt_fixed_path_name,we_wts_path_name: Use a more rigid nomenclature, which will be coherent with the previous codes (i.e. clustering, calculating weights).
