@@ -4,7 +4,7 @@
 
 *Objective:* Building Markov state models with weighted ensemble (WE) simulation data.
 
-*Problem:* When constructing a transition matrix $\bf T$ for a weighted ensemble simulation, using lag times longer than a single resampling cycle can cause the dataset to become biased. Trajectories that are ended prematurely (by merging) are generally closer to stable states. If $\bf T$ simply disregards these trajectories, it is systematically undercounting transitions towards more stable states. We have proved this implicit bias in the MBC-MSM article (pre-print: 10.26434/chemrxiv-2024-z17mb) and name this as $\bf merging bias$.   
+*Problem:* When constructing a transition matrix $\bf T$ for a weighted ensemble simulation, using lag times longer than a single resampling cycle can cause the dataset to become biased. Trajectories that are ended prematurely (by merging) are generally closer to stable states. If $\bf T$ simply disregards these trajectories, it is systematically undercounting transitions towards more stable states. We have proved this implicit bias in the MBC-MSM article (pre-print: https://chemrxiv.org/engage/chemrxiv/article-details/66ccc59e20ac769e5fe8eeb8) and name this as **merging bias**.   
 
 *Solution:* Keep an accounting of all "incomplete" trajectory segments as follows.  When constructing a time-lagged count matrix $\bf C$ with a lag-time $\tau$, define a set of matrices, ${\bf M}_i$, whose elements $M_i(k,j)$ count the number of trajectories that have made it to $k$, starting from state $j$, but there are still $i$ timesteps left in the transition interval.
 
@@ -16,7 +16,7 @@ where, the summation runs over i=1 to i=$\tau$-1, the ${\bf C}_{\text{obs}}$ is 
 
 **Technical details -**
 
-*Contents:* Codes that can be used to build merging corrected time-lagged counts matrices, $\bf C$, following the method proposed in the MBC-MSM paper (link to pre-print XXX).
+*Contents:* Codes that can be used to build merging corrected time-lagged counts matrices, $\bf C$, following the method proposed in the MBC-MSM paper (link provided above).
 
 Software prerequisite: WEPY.
 
